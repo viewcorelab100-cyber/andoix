@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AdoniX - AI 자동 코인 투자 솔루션</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #000000;
+            overflow-x: hidden;
+        }
+        
+        html {
+            overflow-x: hidden;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        
+        .accordion-content.active {
+            max-height: 500px;
+        }
+        
+        /* 모바일 터치 최적화 */
+        @media (max-width: 640px) {
+            .accordion-content.active {
+                max-height: 400px;
+            }
+        }
+        
+        /* 1-2. 클래식 네온 - 얇은 폰트 (메인 버튼) */
+        .neon-style-1-2 {
+            position: relative;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(15, 23, 42, 0.8));
+            backdrop-filter: blur(10px);
+            border-radius: 1.5rem;
+            border: 1px solid transparent;
+            background-image: 
+                linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(15, 23, 42, 0.8)),
+                linear-gradient(90deg, #1e40af, #3b82f6, #60a5fa, #3b82f6, #1e40af);
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            box-shadow: 
+                inset 0 1px 20px rgba(59, 130, 246, 0.15),
+                0 0 20px rgba(59, 130, 246, 0.2);
+            font-weight: 400;
+        }
+        
+        /* 서브 버튼 스타일 5: 라이트 테두리 */
+        .sub-btn-5 {
+            position: relative;
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(10px);
+            border-radius: 1.5rem;
+            border: 1.5px solid rgba(147, 197, 253, 0.3);
+            color: #bfdbfe;
+            font-weight: 400;
+            box-shadow: 
+                inset 0 1px 12px rgba(59, 130, 246, 0.1),
+                0 0 8px rgba(147, 197, 253, 0.15);
+        }
+        .sub-btn-5:hover {
+            border-color: rgba(147, 197, 253, 0.5);
+            background: rgba(15, 23, 42, 0.6);
+        }
+    </style>
+</head>
+<body class="min-h-screen" style="background: #000000;">
+    <!-- 상단 네비게이션 바 -->
+    <nav class="fixed top-0 left-0 right-0 z-50">
+        <div class="container mx-auto px-8 lg:px-12">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex items-center justify-between h-20">
+                    <!-- 좌측: 브랜드명 -->
+                    <div class="flex-1">
+                        <a href="#" class="text-2xl font-bold bg-gradient-to-b from-white from-60% to-gray-400 bg-clip-text text-transparent hover:opacity-80 transition-opacity">
+                            AdoniX
+                        </a>
+                    </div>
+                    
+                    <!-- 중앙: 메뉴 -->
+                    <div class="hidden md:flex items-center gap-8">
+                        <a href="#about" class="text-gray-300 hover:text-white transition-colors duration-200 text-sm font-medium">About</a>
+                        <a href="#features" class="text-gray-300 hover:text-white transition-colors duration-200 text-sm font-medium">Features</a>
+                        <a href="#experts" class="text-gray-300 hover:text-white transition-colors duration-200 text-sm font-medium">Experts</a>
+                        <a href="#roadmap" class="text-gray-300 hover:text-white transition-colors duration-200 text-sm font-medium">Roadmap</a>
+                        <a href="#performance" class="text-gray-300 hover:text-white transition-colors duration-200 text-sm font-medium">Performance</a>
+                    </div>
+                    
+                    <!-- 우측: 회원가입/로그인 -->
+                    <div class="flex-1 flex items-center justify-end gap-6">
+                        <button class="hidden sm:block text-sm font-medium text-gray-300 hover:text-white transition-colors duration-200">
+                            Login
+                        </button>
+                        <button class="text-sm font-medium text-gray-300 hover:text-white transition-colors duration-200">
+                            Sign Up
+                        </button>
+                        
+                        <!-- 모바일 메뉴 버튼 -->
+                        <button class="md:hidden p-2 text-gray-300 hover:text-white" onclick="toggleMobileMenu()">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 모바일 메뉴 -->
+        <div id="mobileMenu" class="hidden md:hidden bg-black/95 backdrop-blur-xl">
+            <div class="container mx-auto px-8 py-4">
+                <div class="flex flex-col gap-4">
+                    <a href="#about" class="text-gray-300 hover:text-white transition-colors duration-200 text-sm font-medium py-2">About</a>
+                    <a href="#features" class="text-gray-300 hover:text-white transition-colors duration-200 text-sm font-medium py-2">Features</a>
+                    <a href="#experts" class="text-gray-300 hover:text-white transition-colors duration-200 text-sm font-medium py-2">Experts</a>
+                    <a href="#roadmap" class="text-gray-300 hover:text-white transition-colors duration-200 text-sm font-medium py-2">Roadmap</a>
+                    <a href="#performance" class="text-gray-300 hover:text-white transition-colors duration-200 text-sm font-medium py-2">Performance</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 히어로 섹션 -->
+    <section class="relative min-h-[100dvh] sm:min-h-screen flex items-center justify-center overflow-hidden pt-20 pb-12 md:pb-0 bg-black">
+        <!-- 배경 이미지 (우측에서 2번째 부분 강조) -->
+        <div class="absolute inset-0">
+            <img src="m.png" alt="Background Chart" class="w-full h-full object-cover opacity-20 sm:opacity-25" loading="lazy" style="filter: brightness(0.9) contrast(1.1); -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,1) 60%, rgba(0,0,0,1) 80%, rgba(0,0,0,0.4) 90%, rgba(0,0,0,0.2) 100%); mask-image: linear-gradient(to right, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,1) 60%, rgba(0,0,0,1) 80%, rgba(0,0,0,0.4) 90%, rgba(0,0,0,0.2) 100%);">
+        </div>
+        
+        <!-- 배경 그라데이션 오버레이 (투명도 낮춤) -->
+        <div class="absolute inset-0 bg-gradient-to-br from-blue-950/20 via-black/20 to-blue-900/10"></div>
+        <div class="absolute top-10 sm:top-20 left-5 sm:left-10 w-48 sm:w-96 h-48 sm:h-96 bg-blue-600/15 rounded-full blur-[80px] sm:blur-[120px]"></div>
+        <div class="absolute bottom-16 sm:bottom-32 right-10 sm:right-20 w-40 sm:w-80 h-40 sm:h-80 bg-blue-500/10 rounded-full blur-[60px] sm:blur-[100px]"></div>
+        
+        <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 max-w-7xl relative z-10">
+            <div class="max-w-7xl mx-auto">
+                <div class="max-w-3xl">
+                    <!-- 뱃지 -->
+                    <div class="relative inline-flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full backdrop-blur-md mb-6 sm:mb-8 overflow-hidden text-xs sm:text-sm">
+                        <span class="absolute inset-0 rounded-full bg-gradient-to-r from-blue-600/30 via-blue-500/20 to-blue-600/30"></span>
+                        <span class="absolute inset-0 rounded-full" style="border: 1px solid transparent; background: linear-gradient(to right, #1e40af, #3b82f6, #1e40af) border-box; -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0); mask-composite: exclude;"></span>
+                        <div class="relative w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-blue-400 animate-pulse"></div>
+                        <span class="relative font-medium text-blue-100">AI 자동매매 솔루션</span>
+                    </div>
+                    
+                    <h1 class="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 leading-tight sm:leading-tight" style="line-height: 1.4; background-image: linear-gradient(to bottom, white 0%, white 30%, #d1d5db 55%, #9ca3af 75%, #6b7280 100%) !important; -webkit-background-clip: text !important; background-clip: text !important; -webkit-text-fill-color: transparent !important; color: transparent !important;">
+                        시장이 움직일 때,<br class="hidden sm:inline">
+                        자동으로 수익을 만드는<br class="hidden sm:inline">
+                        코인 투자 솔루션
+                    </h1>
+                    
+                    <p class="text-sm sm:text-base md:text-lg lg:text-xl text-blue-100/80 mb-2 sm:mb-3 leading-relaxed">
+                        복잡한 차트 분석 없이, 매일 안정적인 수익을 경험하세요.
+                    </p>
+                    <p class="text-sm sm:text-base md:text-lg lg:text-xl text-blue-100/80 mb-6 sm:mb-8 md:mb-10 leading-relaxed">
+                        한 번 설정하면 24시간 자동으로 운용됩니다.
+                    </p>
+                    
+                    <!-- CTA 버튼 -->
+                    <div class="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 max-w-md mx-auto sm:mx-0">
+                        <button class="neon-style-1-2 w-full sm:flex-1 px-5 py-3.5 sm:px-8 sm:py-4 md:px-10 md:py-5 text-sm sm:text-base md:text-lg text-white transition-all duration-300 hover:scale-105 active:scale-95 touch-manipulation">
+                            <span class="relative z-10 font-medium">지금 시작하기</span>
+                        </button>
+                        <button class="sub-btn-5 w-full sm:flex-1 px-5 py-3.5 sm:px-8 sm:py-4 md:px-10 md:py-5 text-sm sm:text-base md:text-lg transition-all duration-300 hover:scale-105 active:scale-95 touch-manipulation">
+                            <span class="relative z-10 font-medium">수익률 확인하기</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 두번째 섹션: 왜 우리와 함께 하시나요? -->
+    <section id="features" class="py-10 sm:py-16 md:py-20 lg:py-24 relative overflow-hidden">
+        <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 max-w-7xl">
+            <div class="max-w-7xl mx-auto">
+                <div class="text-center mb-8 sm:mb-10 md:mb-14">
+                    <h2 class="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-normal mb-4 sm:mb-6 px-4" style="line-height: 1.6; background-image: linear-gradient(to bottom, white 0%, white 60%, #9ca3af 85%, #4b5563 100%) !important; -webkit-background-clip: text !important; background-clip: text !important; -webkit-text-fill-color: transparent !important; color: transparent !important;">
+                        왜 우리와 함께 하시나요?
+                    </h2>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 md:gap-6">
+                    <!-- 카드 1 -->
+                    <div class="relative overflow-hidden rounded-2xl h-full">
+                        <div class="absolute inset-0 bg-gradient-to-t from-blue-600/30 via-blue-500/5 to-transparent"></div>
+                        <div class="absolute -bottom-20 left-1/2 -translate-x-1/2 w-64 h-64 bg-blue-500/50 rounded-full blur-[80px]"></div>
+                        
+                        <div class="relative z-10 bg-black/30 backdrop-blur-2xl border border-blue-900/20 rounded-xl sm:rounded-2xl shadow-2xl p-5 sm:p-6 md:p-8 lg:p-10 h-full min-h-[200px] sm:min-h-[240px] md:min-h-[280px] flex flex-col">
+                            <!-- 글래스모피즘 아이콘 -->
+                            <div class="relative w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 mb-3 sm:mb-4 rounded-lg sm:rounded-xl md:rounded-2xl bg-gradient-to-br from-blue-400/30 to-blue-600/20 backdrop-blur-xl border border-blue-400/40 flex items-center justify-center shadow-lg">
+                                <svg class="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 lg:w-8 lg:h-8" fill="none" stroke="url(#iconGradient1)" viewBox="0 0 24 24">
+                                    <defs>
+                                        <linearGradient id="iconGradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" style="stop-color:#60a5fa;stop-opacity:1" />
+                                            <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
+                                        </linearGradient>
+                                    </defs>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-base sm:text-lg md:text-xl lg:text-2xl font-bold mb-2 sm:mb-3 leading-tight" style="background: linear-gradient(to bottom, white 0%, white 60%, #9ca3af 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
+                                매달 안정적인 수익
+                            </h3>
+                            <p class="text-blue-100/70 text-xs sm:text-sm md:text-base lg:text-lg leading-relaxed">
+                                36개월 기준 월평균 15% 이상의 꾸준한 수익
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- 카드 2 -->
+                    <div class="relative overflow-hidden rounded-2xl h-full">
+                        <div class="absolute inset-0 bg-gradient-to-t from-blue-600/30 via-blue-500/5 to-transparent"></div>
+                        <div class="absolute -bottom-20 left-1/2 -translate-x-1/2 w-64 h-64 bg-blue-500/50 rounded-full blur-[80px]"></div>
+                        
+                        <div class="relative z-10 bg-black/30 backdrop-blur-2xl border border-blue-900/20 rounded-xl sm:rounded-2xl shadow-2xl p-5 sm:p-6 md:p-8 lg:p-10 h-full min-h-[200px] sm:min-h-[240px] md:min-h-[280px] flex flex-col">
+                            <!-- 글래스모피즘 아이콘 -->
+                            <div class="relative w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 mb-3 sm:mb-4 rounded-lg sm:rounded-xl md:rounded-2xl bg-gradient-to-br from-blue-400/30 to-blue-600/20 backdrop-blur-xl border border-blue-400/40 flex items-center justify-center shadow-lg">
+                                <svg class="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 lg:w-8 lg:h-8" fill="none" stroke="url(#iconGradient2)" viewBox="0 0 24 24">
+                                    <defs>
+                                        <linearGradient id="iconGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" style="stop-color:#60a5fa;stop-opacity:1" />
+                                            <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
+                                        </linearGradient>
+                                    </defs>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-base sm:text-lg md:text-xl lg:text-2xl font-bold mb-2 sm:mb-3 leading-tight" style="background: linear-gradient(to bottom, white 0%, white 60%, #9ca3af 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
+                                완전 자동 운용
+                            </h3>
+                            <p class="text-blue-100/70 text-xs sm:text-sm md:text-base lg:text-lg leading-relaxed">
+                                시장 분석, 진입·청산, 리스크 관리까지 AI가 알아서
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- 카드 3 -->
+                    <div class="relative overflow-hidden rounded-2xl h-full">
+                        <div class="absolute inset-0 bg-gradient-to-t from-blue-600/30 via-blue-500/5 to-transparent"></div>
+                        <div class="absolute -bottom-20 left-1/2 -translate-x-1/2 w-64 h-64 bg-blue-500/50 rounded-full blur-[80px]"></div>
+                        
+                        <div class="relative z-10 bg-black/30 backdrop-blur-2xl border border-blue-900/20 rounded-xl sm:rounded-2xl shadow-2xl p-5 sm:p-6 md:p-8 lg:p-10 h-full min-h-[200px] sm:min-h-[240px] md:min-h-[280px] flex flex-col">
+                            <!-- 글래스모피즘 아이콘 -->
+                            <div class="relative w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 mb-3 sm:mb-4 rounded-lg sm:rounded-xl md:rounded-2xl bg-gradient-to-br from-blue-400/30 to-blue-600/20 backdrop-blur-xl border border-blue-400/40 flex items-center justify-center shadow-lg">
+                                <svg class="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 lg:w-8 lg:h-8" fill="none" stroke="url(#iconGradient3)" viewBox="0 0 24 24">
+                                    <defs>
+                                        <linearGradient id="iconGradient3" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" style="stop-color:#60a5fa;stop-opacity:1" />
+                                            <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
+                                        </linearGradient>
+                                    </defs>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-base sm:text-lg md:text-xl lg:text-2xl font-bold mb-2 sm:mb-3 leading-tight" style="background: linear-gradient(to bottom, white 0%, white 60%, #9ca3af 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
+                                OKX 계좌에서 직접 운용
+                            </h3>
+                            <p class="text-blue-100/70 text-xs sm:text-sm md:text-base lg:text-lg leading-relaxed">
+                                투자금은 거래소 계정 안에서만 움직입니다.<br>
+                                AdoniX는 권한이 없습니다.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- 카드 4 -->
+                    <div class="relative overflow-hidden rounded-2xl h-full">
+                        <div class="absolute inset-0 bg-gradient-to-t from-blue-600/30 via-blue-500/5 to-transparent"></div>
+                        <div class="absolute -bottom-20 left-1/2 -translate-x-1/2 w-64 h-64 bg-blue-500/50 rounded-full blur-[80px]"></div>
+                        
+                        <div class="relative z-10 bg-black/30 backdrop-blur-2xl border border-blue-900/20 rounded-xl sm:rounded-2xl shadow-2xl p-5 sm:p-6 md:p-8 lg:p-10 h-full min-h-[200px] sm:min-h-[240px] md:min-h-[280px] flex flex-col">
+                            <!-- 글래스모피즘 아이콘 -->
+                            <div class="relative w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 mb-3 sm:mb-4 rounded-lg sm:rounded-xl md:rounded-2xl bg-gradient-to-br from-blue-400/30 to-blue-600/20 backdrop-blur-xl border border-blue-400/40 flex items-center justify-center shadow-lg">
+                                <svg class="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 lg:w-8 lg:h-8" fill="none" stroke="url(#iconGradient4)" viewBox="0 0 24 24">
+                                    <defs>
+                                        <linearGradient id="iconGradient4" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" style="stop-color:#60a5fa;stop-opacity:1" />
+                                            <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
+                                        </linearGradient>
+                                    </defs>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-base sm:text-lg md:text-xl lg:text-2xl font-bold mb-2 sm:mb-3 leading-tight" style="background: linear-gradient(to bottom, white 0%, white 60%, #9ca3af 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
+                                글로벌 수준의 안정성
+                            </h3>
+                            <p class="text-blue-100/70 text-xs sm:text-sm md:text-base lg:text-lg leading-relaxed">
+                                분산 서버 운영률 99.99%<br>
+                                실시간 모니터링 시스템으로 중단 없는 운용
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 세번째 섹션: 팀 소개 -->
+    <section id="experts" class="py-12 sm:py-16 md:py-24 relative overflow-hidden">
+        <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
+            <div class="max-w-7xl mx-auto">
+                <div class="text-center mb-8 sm:mb-12 md:mb-16">
+                    <h2 class="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-normal mb-4 sm:mb-6 px-4 leading-tight" style="line-height: 1.5; background-image: linear-gradient(to bottom, white 0%, white 60%, #9ca3af 85%, #4b5563 100%) !important; -webkit-background-clip: text !important; background-clip: text !important; -webkit-text-fill-color: transparent !important; color: transparent !important;">
+                        기술 기반 운용 전문가 그룹
+                    </h2>
+                </div>
+                
+                <div class="grid sm:grid-cols-2 gap-4 sm:gap-6">
+                    <!-- 팀원 1 - Purple -->
+                    <div class="relative overflow-hidden rounded-2xl h-full">
+                        <div class="absolute inset-0 bg-gradient-to-t from-purple-600/30 via-purple-500/5 to-transparent"></div>
+                        <div class="absolute -bottom-20 left-1/2 -translate-x-1/2 w-64 h-64 bg-purple-500/50 rounded-full blur-[80px]"></div>
+                        
+                        <div class="relative z-10 bg-black/30 backdrop-blur-2xl border border-purple-900/20 rounded-2xl shadow-2xl p-6 sm:p-8 md:p-10 h-full min-h-[240px] sm:min-h-[280px] flex flex-col">
+                            <div class="relative inline-flex items-center gap-2 px-3 py-1 rounded-full backdrop-blur-md mb-4 overflow-hidden w-fit">
+                                <span class="absolute inset-0 rounded-full bg-gradient-to-r from-purple-600/30 via-purple-500/20 to-purple-600/30"></span>
+                                <span class="absolute inset-0 rounded-full" style="border: 1px solid transparent; background: linear-gradient(to right, #7e22ce, #a855f7, #7e22ce) border-box; -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0); mask-composite: exclude;"></span>
+                                <span class="relative text-xs font-semibold text-purple-100 whitespace-nowrap">CSO</span>
+                            </div>
+                            
+                            <h3 class="text-2xl font-bold mb-3" style="line-height: 1.6;">
+                                <span class="bg-gradient-to-r from-purple-200 to-purple-500 bg-clip-text text-transparent">
+                                    최고전략책임자
+                                </span>
+                            </h3>
+                            <p class="text-purple-100/80" style="line-height: 1.8;">
+                                투자은행 출신 알고리즘 트레이딩 전문가.<br>
+                                10년 이상 실전 경험과 180% 이상 연평균 수익률을 기록한 전략 운용.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- 팀원 2 - Emerald -->
+                    <div class="relative overflow-hidden rounded-2xl h-full">
+                        <div class="absolute inset-0 bg-gradient-to-t from-emerald-600/30 via-emerald-500/5 to-transparent"></div>
+                        <div class="absolute -bottom-20 left-1/2 -translate-x-1/2 w-64 h-64 bg-emerald-500/50 rounded-full blur-[80px]"></div>
+                        
+                        <div class="relative z-10 bg-black/30 backdrop-blur-2xl border border-emerald-900/20 rounded-2xl shadow-2xl p-6 sm:p-8 md:p-10 h-full min-h-[240px] sm:min-h-[280px] flex flex-col">
+                            <div class="relative inline-flex items-center gap-2 px-3 py-1 rounded-full backdrop-blur-md mb-4 overflow-hidden w-fit">
+                                <span class="absolute inset-0 rounded-full bg-gradient-to-r from-emerald-600/30 via-emerald-500/20 to-emerald-600/30"></span>
+                                <span class="absolute inset-0 rounded-full" style="border: 1px solid transparent; background: linear-gradient(to right, #047857, #10b981, #047857) border-box; -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0); mask-composite: exclude;"></span>
+                                <span class="relative text-xs font-semibold text-emerald-100 whitespace-nowrap">Dev</span>
+                            </div>
+                            
+                            <h3 class="text-2xl font-bold mb-3" style="line-height: 1.6;">
+                                <span class="bg-gradient-to-r from-emerald-200 to-emerald-500 bg-clip-text text-transparent">
+                                    수석 개발자
+                                </span>
+                            </h3>
+                            <p class="text-emerald-100/80" style="line-height: 1.8;">
+                                IT기업 AI 연구원 출신.<br>
+                                고성능 자동매매 시스템 설계 및 리스크 제어 로직 개발
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- 팀원 3 - Amber -->
+                    <div class="relative overflow-hidden rounded-2xl h-full">
+                        <div class="absolute inset-0 bg-gradient-to-t from-amber-600/30 via-amber-500/5 to-transparent"></div>
+                        <div class="absolute -bottom-20 left-1/2 -translate-x-1/2 w-64 h-64 bg-amber-500/50 rounded-full blur-[80px]"></div>
+                        
+                        <div class="relative z-10 bg-black/30 backdrop-blur-2xl border border-amber-900/20 rounded-2xl shadow-2xl p-6 sm:p-8 md:p-10 h-full min-h-[240px] sm:min-h-[280px] flex flex-col">
+                            <div class="relative inline-flex items-center gap-2 px-3 py-1 rounded-full mb-4 overflow-hidden w-fit">
+                                <span class="absolute inset-0 rounded-full bg-gradient-to-r from-amber-600/30 via-amber-500/20 to-amber-600/30 backdrop-blur-md"></span>
+                                <span class="absolute inset-0 rounded-full" style="border: 1px solid transparent; background: linear-gradient(to right, #d97706, #f59e0b, #d97706) border-box; -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0); mask-composite: exclude;"></span>
+                                <span class="relative text-xs font-semibold text-amber-100 whitespace-nowrap">Data</span>
+                            </div>
+                            
+                            <h3 class="text-2xl font-bold mb-3" style="line-height: 1.6;">
+                                <span class="bg-gradient-to-r from-amber-200 to-amber-500 bg-clip-text text-transparent">
+                                    데이터 분석가
+                                </span>
+                            </h3>
+                            <p class="text-amber-100/80" style="line-height: 1.8;">
+                                금융공학 출신 빅데이터 전문가.<br>
+                                10TB 이상 실거래 데이터 기반으로 AI 모델을 최적화.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- 팀원 4 - Rose -->
+                    <div class="relative overflow-hidden rounded-2xl h-full">
+                        <div class="absolute inset-0 bg-gradient-to-t from-rose-600/30 via-rose-500/5 to-transparent"></div>
+                        <div class="absolute -bottom-20 left-1/2 -translate-x-1/2 w-64 h-64 bg-rose-500/50 rounded-full blur-[80px]"></div>
+                        
+                        <div class="relative z-10 bg-black/30 backdrop-blur-2xl border border-rose-900/20 rounded-2xl shadow-2xl p-6 sm:p-8 md:p-10 h-full min-h-[240px] sm:min-h-[280px] flex flex-col">
+                            <div class="relative inline-flex items-center gap-2 px-3 py-1 rounded-full backdrop-blur-md mb-4 overflow-hidden w-fit">
+                                <span class="absolute inset-0 rounded-full bg-gradient-to-r from-rose-600/30 via-rose-500/20 to-rose-600/30"></span>
+                                <span class="absolute inset-0 rounded-full" style="border: 1px solid transparent; background: linear-gradient(to right, #e11d48, #f43f5e, #e11d48) border-box; -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0); mask-composite: exclude;"></span>
+                                <span class="relative text-xs font-semibold text-rose-100 whitespace-nowrap">Infra</span>
+                            </div>
+                            
+                            <h3 class="text-2xl font-bold mb-3" style="line-height: 1.6;">
+                                <span class="bg-gradient-to-r from-rose-200 to-rose-500 bg-clip-text text-transparent">
+                                    보안·시스템 책임자
+                                </span>
+                            </h3>
+                            <p class="text-rose-100/80" style="line-height: 1.8;">
+                                분산 서버 인프라와 거래소 연동 보안 설계를 총괄하는 글로벌 클라우드 아키텍처 및 보안 전문가.<br>
+                                실시간 가동률 99.99%를 유지
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 네번째 섹션: 작동원리 -->
+    <section class="py-10 sm:py-16 md:py-20 lg:py-24 relative overflow-hidden">
+        <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 max-w-7xl">
+            <div class="max-w-5xl mx-auto">
+                <div class="text-center mb-8 sm:mb-10 md:mb-14">
+                    <h2 class="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-normal mb-4 sm:mb-6 px-4 leading-tight" style="line-height: 1.5; background-image: linear-gradient(to bottom, white 0%, white 60%, #9ca3af 85%, #4b5563 100%) !important; -webkit-background-clip: text !important; background-clip: text !important; -webkit-text-fill-color: transparent !important; color: transparent !important;">
+                        작동원리
+                    </h2>
+                </div>
+                
+                <div class="space-y-4 sm:space-y-5 md:space-y-6">
+                    <!-- 단계 1 -->
+                    <div class="relative overflow-hidden rounded-xl sm:rounded-2xl cursor-pointer accordion-item touch-manipulation" onclick="toggleAccordion(this)">
+                        <div class="absolute inset-0 bg-gradient-to-t from-blue-600/30 via-blue-500/5 to-transparent"></div>
+                        <div class="absolute -bottom-20 left-1/2 -translate-x-1/2 w-64 h-64 bg-blue-500/50 rounded-full blur-[80px]"></div>
+                        
+                        <div class="relative z-10 bg-black/30 backdrop-blur-2xl border border-blue-900/20 rounded-xl sm:rounded-2xl shadow-2xl p-5 sm:p-6 md:p-8">
+                            <div class="flex items-center justify-between gap-3 min-h-[60px] sm:min-h-[70px]">
+                                <div class="flex items-center gap-3 sm:gap-4 md:gap-6 flex-1">
+                                    <div class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent flex-shrink-0">01</div>
+                                    <div class="flex-1">
+                                        <h3 class="text-base sm:text-lg md:text-xl lg:text-2xl font-bold leading-tight" style="background: linear-gradient(to bottom, white 0%, white 60%, #9ca3af 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
+                                            회원가입 / 로그인
+                                        </h3>
+                                    </div>
+                                </div>
+                                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-blue-400 transition-transform accordion-icon flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </div>
+                            
+                            <div class="accordion-content mt-3 sm:mt-4">
+                                <p class="text-blue-100/70 text-xs sm:text-sm md:text-base lg:text-lg pl-0 sm:pl-10 md:pl-16 lg:pl-20 leading-relaxed">
+                                    간단한 회원가입 후, 본인의 거래소 계정(API)을 안전하게 연결합니다.<br>
+                                    모든 데이터는 암호화되어 보호되며, 출금 권한은 절대 요구하지 않습니다.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 단계 2 -->
+                    <div class="relative overflow-hidden rounded-xl sm:rounded-2xl cursor-pointer accordion-item touch-manipulation" onclick="toggleAccordion(this)">
+                        <div class="absolute inset-0 bg-gradient-to-t from-blue-600/30 via-blue-500/5 to-transparent"></div>
+                        <div class="absolute -bottom-20 left-1/2 -translate-x-1/2 w-64 h-64 bg-blue-500/50 rounded-full blur-[80px]"></div>
+                        
+                        <div class="relative z-10 bg-black/30 backdrop-blur-2xl border border-blue-900/20 rounded-xl sm:rounded-2xl shadow-2xl p-5 sm:p-6 md:p-8">
+                            <div class="flex items-center justify-between gap-3 min-h-[60px] sm:min-h-[70px]">
+                                <div class="flex items-center gap-3 sm:gap-4 md:gap-6 flex-1">
+                                    <div class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent flex-shrink-0">02</div>
+                                    <div class="flex-1">
+                                        <h3 class="text-base sm:text-lg md:text-xl lg:text-2xl font-bold leading-tight" style="background: linear-gradient(to bottom, white 0%, white 60%, #9ca3af 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
+                                            투자금 입력
+                                        </h3>
+                                    </div>
+                                </div>
+                                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-blue-400 transition-transform accordion-icon flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </div>
+                            
+                            <div class="accordion-content mt-3 sm:mt-4">
+                                <p class="text-blue-100/70 text-xs sm:text-sm md:text-base lg:text-lg pl-0 sm:pl-10 md:pl-16 lg:pl-20 leading-relaxed">
+                                    원하는 금액을 입력하고 자동매매 봇을 활성화하세요.<br>
+                                    진입 전 리스크 한도와 목표 수익률이 자동 설정됩니다.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 단계 3 -->
+                    <div class="relative overflow-hidden rounded-xl sm:rounded-2xl cursor-pointer accordion-item touch-manipulation" onclick="toggleAccordion(this)">
+                        <div class="absolute inset-0 bg-gradient-to-t from-blue-600/30 via-blue-500/5 to-transparent"></div>
+                        <div class="absolute -bottom-20 left-1/2 -translate-x-1/2 w-64 h-64 bg-blue-500/50 rounded-full blur-[80px]"></div>
+                        
+                        <div class="relative z-10 bg-black/30 backdrop-blur-2xl border border-blue-900/20 rounded-xl sm:rounded-2xl shadow-2xl p-5 sm:p-6 md:p-8">
+                            <div class="flex items-center justify-between gap-3 min-h-[60px] sm:min-h-[70px]">
+                                <div class="flex items-center gap-3 sm:gap-4 md:gap-6 flex-1">
+                                    <div class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent flex-shrink-0">03</div>
+                                    <div class="flex-1">
+                                        <h3 class="text-base sm:text-lg md:text-xl lg:text-2xl font-bold leading-tight" style="background: linear-gradient(to bottom, white 0%, white 60%, #9ca3af 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
+                                            자동 거래 실행
+                                        </h3>
+                                    </div>
+                                </div>
+                                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-blue-400 transition-transform accordion-icon flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </div>
+                            
+                            <div class="accordion-content mt-3 sm:mt-4">
+                                <p class="text-blue-100/70 text-xs sm:text-sm md:text-base lg:text-lg pl-0 sm:pl-10 md:pl-16 lg:pl-20 leading-relaxed">
+                                    봇이 실시간 시장 변화를 감지하고 자동으로 매수·매도합니다.<br>
+                                    거래 결과와 수익은 매일 실시간으로 계좌에 반영됩니다.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-8 sm:mt-10 md:mt-12 px-4">
+                    <button class="neon-style-1-2 w-full sm:w-auto px-5 py-3.5 sm:px-8 sm:py-4 md:px-10 md:py-5 text-sm sm:text-base md:text-lg text-white transition-all duration-300 hover:scale-105 active:scale-95 touch-manipulation max-w-xs sm:max-w-none mx-auto">
+                        <span class="relative z-10 font-medium">자세히 알아보기</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 리뷰 섹션: 실제 사용자 경험 -->
+    <section id="about" class="py-12 sm:py-16 md:py-24 relative overflow-hidden">
+        <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
+            <div class="max-w-7xl mx-auto">
+                <div class="text-center mb-8 sm:mb-12 md:mb-16">
+                    <h2 class="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-normal mb-4 sm:mb-6 px-4 leading-tight" style="line-height: 1.5; background-image: linear-gradient(to bottom, white 0%, white 60%, #9ca3af 85%, #4b5563 100%) !important; -webkit-background-clip: text !important; background-clip: text !important; -webkit-text-fill-color: transparent !important; color: transparent !important;">
+                        실제 사용자들의 경험, 진짜 수익 이야기
+                    </h2>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- 리뷰 1 -->
+                    <div class="relative overflow-hidden rounded-2xl">
+                        <div class="absolute inset-0 bg-gradient-to-t from-blue-600/30 via-blue-500/5 to-transparent"></div>
+                        <div class="absolute -bottom-20 left-1/2 -translate-x-1/2 w-64 h-64 bg-blue-500/50 rounded-full blur-[80px]"></div>
+                        
+                        <div class="relative z-10 bg-black/30 backdrop-blur-2xl border border-blue-900/20 rounded-2xl shadow-2xl p-8">
+                            <h3 class="text-xl font-bold mb-4 bg-gradient-to-b from-white from-60% to-gray-400 bg-clip-text text-transparent" style="line-height: 1.6;">
+                                매일 아침 수익 확인이 즐겁습니다.
+                            </h3>
+                            <p class="text-blue-100/80 mb-6" style="line-height: 1.8;">
+                                AI 봇이 대신 거래해주니까 스트레스가 없어졌어요. 급등락장에서도 손실을 최소화해주고, 매달 안정적인 수익이 들어오니 이제는 시장을 매일 보지 않아도 됩니다.
+                            </p>
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <div class="text-yellow-400 text-lg mb-1">★ ★ ★ ★ ★</div>
+                                    <p class="text-blue-200/60 text-sm">김*훈 — 개인투자자 (서울)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 리뷰 2 -->
+                    <div class="relative overflow-hidden rounded-2xl">
+                        <div class="absolute inset-0 bg-gradient-to-t from-purple-600/30 via-purple-500/5 to-transparent"></div>
+                        <div class="absolute -bottom-20 left-1/2 -translate-x-1/2 w-64 h-64 bg-purple-500/50 rounded-full blur-[80px]"></div>
+                        
+                        <div class="relative z-10 bg-black/30 backdrop-blur-2xl border border-purple-900/20 rounded-2xl shadow-2xl p-8">
+                            <h3 class="text-xl font-bold mb-4 bg-gradient-to-b from-white from-60% to-gray-400 bg-clip-text text-transparent" style="line-height: 1.6;">
+                                초보자도 쉽게 사용할 수 있었어요.
+                            </h3>
+                            <p class="text-purple-100/80 mb-6" style="line-height: 1.8;">
+                                트레이딩뷰 신호만 봐도 어려웠던 제가 AdoniX를 연결하고 나서부터는 "봇이 알아서 매매해주는 구조" 덕분에 훨씬 편해졌어요. 복잡한 설정 없이 수익률이 꾸준히 쌓이는 게 신기합니다.
+                            </p>
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <div class="text-yellow-400 text-lg mb-1">★ ★ ★ ★ ★</div>
+                                    <p class="text-purple-200/60 text-sm">이*늘 — 대학생 투자자</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 리뷰 3 -->
+                    <div class="relative overflow-hidden rounded-2xl">
+                        <div class="absolute inset-0 bg-gradient-to-t from-emerald-600/30 via-emerald-500/5 to-transparent"></div>
+                        <div class="absolute -bottom-20 left-1/2 -translate-x-1/2 w-64 h-64 bg-emerald-500/50 rounded-full blur-[80px]"></div>
+                        
+                        <div class="relative z-10 bg-black/30 backdrop-blur-2xl border border-emerald-900/20 rounded-2xl shadow-2xl p-8">
+                            <h3 class="text-xl font-bold mb-4 bg-gradient-to-b from-white from-60% to-gray-400 bg-clip-text text-transparent" style="line-height: 1.6;">
+                                리스크 제어가 확실합니다.
+                            </h3>
+                            <p class="text-emerald-100/80 mb-6" style="line-height: 1.8;">
+                                다른 자동매매 봇은 급락장에서 손실이 컸는데, AdoniX는 손절 트리거가 잘 작동해서 계좌 방어가 확실했어요. 시장이 불안해도 AI가 리스크를 관리하니 믿음이 갑니다.
+                            </p>
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <div class="text-yellow-400 text-lg mb-1">★ ★ ★ ★ ★</div>
+                                    <p class="text-emerald-200/60 text-sm">박*우 — 프리랜서 트레이더</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 리뷰 4 -->
+                    <div class="relative overflow-hidden rounded-2xl">
+                        <div class="absolute inset-0 bg-gradient-to-t from-amber-600/30 via-amber-500/5 to-transparent"></div>
+                        <div class="absolute -bottom-20 left-1/2 -translate-x-1/2 w-64 h-64 bg-amber-500/50 rounded-full blur-[80px]"></div>
+                        
+                        <div class="relative z-10 bg-black/30 backdrop-blur-2xl border border-amber-900/20 rounded-2xl shadow-2xl p-8">
+                            <h3 class="text-xl font-bold mb-4 bg-gradient-to-b from-white from-60% to-gray-400 bg-clip-text text-transparent" style="line-height: 1.6;">
+                                해외 거래소 연동도 문제없네요.
+                            </h3>
+                            <p class="text-amber-100/80 mb-6" style="line-height: 1.8;">
+                                저는 바이비트와 바이낸스 두 군데를 쓰는데, AdoniX가 두 거래소를 동시에 관리해줘서 너무 편합니다. 트레이딩뷰 시그널까지 자동으로 반영돼서 진짜 완전 자동이에요.
+                            </p>
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <div class="text-yellow-400 text-lg mb-1">★ ★ ★ ★ ★</div>
+                                    <p class="text-amber-200/60 text-sm">최*재 — 글로벌 사용자 (싱가포르)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 다섯번째 섹션: 로드맵 -->
+    <section id="roadmap" class="py-12 sm:py-16 md:py-24 relative overflow-hidden">
+        <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
+            <div class="max-w-7xl mx-auto">
+                <div class="text-center mb-8 sm:mb-12 md:mb-16">
+                    <h2 class="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-normal mb-4 sm:mb-6 px-4 leading-tight" style="line-height: 1.5; background-image: linear-gradient(to bottom, white 0%, white 60%, #9ca3af 85%, #4b5563 100%) !important; -webkit-background-clip: text !important; background-clip: text !important; -webkit-text-fill-color: transparent !important; color: transparent !important;">
+                        AdoniX 로드맵
+                    </h2>
+                    <p class="text-blue-100/80 text-xl" style="line-height: 1.8;">
+                        2025년 서비스 론칭 → 2026년 글로벌 확장 → 2027년 생태계 구축까지<br>
+                        AdoniX가 성장해 나갈 3단계 로드맵입니다.
+                    </p>
+                </div>
+                
+                <div class="space-y-8">
+                    <!-- STEP 1 -->
+                    <div class="relative overflow-hidden rounded-2xl">
+                        <div class="absolute inset-0 bg-gradient-to-t from-blue-600/30 via-blue-500/5 to-transparent"></div>
+                        <div class="absolute -bottom-20 left-1/2 -translate-x-1/2 w-96 h-96 bg-blue-500/50 rounded-full blur-[80px]"></div>
+                        
+                        <div class="relative z-10 bg-black/30 backdrop-blur-2xl border border-blue-900/20 rounded-2xl shadow-2xl p-10">
+                            <div class="flex flex-col md:flex-row gap-8">
+                                <div class="flex-1">
+                                    <div class="relative inline-flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-md mb-4 overflow-hidden">
+                                        <span class="absolute inset-0 rounded-full bg-gradient-to-r from-blue-600/30 via-blue-500/20 to-blue-600/30"></span>
+                                        <span class="absolute inset-0 rounded-full" style="border: 1px solid transparent; background: linear-gradient(to right, #1e40af, #3b82f6, #1e40af) border-box; -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0); mask-composite: exclude;"></span>
+                                        <span class="relative text-sm font-semibold text-blue-100">STEP 1 — 2025</span>
+                                    </div>
+                                    
+                                    <h3 class="text-3xl font-bold mb-4" style="line-height: 1.6;">
+                                        <span class="bg-gradient-to-r from-blue-200 to-blue-500 bg-clip-text text-transparent">
+                                            서비스 론칭
+                                        </span>
+                                    </h3>
+                                    
+                                    <p class="text-blue-200/70 mb-4 text-lg font-semibold">목표: 시장 진입 및 사용자 기반 구축</p>
+                                    
+                                    <ul class="space-y-2 text-blue-100/80" style="line-height: 1.8;">
+                                        <li>• 핵심 기능 완성 및 안정화</li>
+                                        <li>• 실제 데이터 피드백 기반 고도화</li>
+                                        <li>• 자동매매 서비스 오픈 및 전국 체인점 사업 진행</li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="w-full md:w-48">
+                                    <div class="text-center mb-4">
+                                        <div class="text-5xl font-bold bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent">95%</div>
+                                        <div class="text-blue-200/70 text-sm mt-2">진행률</div>
+                                    </div>
+                                    <div class="w-full bg-blue-950/50 rounded-full h-3 overflow-hidden">
+                                        <div class="bg-gradient-to-r from-blue-500 to-blue-700 h-full rounded-full" style="width: 95%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- STEP 2 -->
+                    <div class="relative overflow-hidden rounded-2xl">
+                        <div class="absolute inset-0 bg-gradient-to-t from-emerald-600/30 via-emerald-500/5 to-transparent"></div>
+                        <div class="absolute -bottom-20 left-1/2 -translate-x-1/2 w-96 h-96 bg-emerald-500/50 rounded-full blur-[80px]"></div>
+                        
+                        <div class="relative z-10 bg-black/30 backdrop-blur-2xl border border-emerald-900/20 rounded-2xl shadow-2xl p-10">
+                            <div class="flex flex-col md:flex-row gap-8">
+                                <div class="flex-1">
+                                    <div class="relative inline-flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-md mb-4 overflow-hidden">
+                                        <span class="absolute inset-0 rounded-full bg-gradient-to-r from-emerald-600/30 via-emerald-500/20 to-emerald-600/30"></span>
+                                        <span class="absolute inset-0 rounded-full" style="border: 1px solid transparent; background: linear-gradient(to right, #047857, #10b981, #047857) border-box; -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0); mask-composite: exclude;"></span>
+                                        <span class="relative text-sm font-semibold text-emerald-100">STEP 2 — 2026</span>
+                                    </div>
+                                    
+                                    <h3 class="text-3xl font-bold mb-4" style="line-height: 1.6;">
+                                        <span class="bg-gradient-to-r from-emerald-200 to-emerald-500 bg-clip-text text-transparent">
+                                            글로벌 확장
+                                        </span>
+                                    </h3>
+                                    
+                                    <p class="text-emerald-200/70 mb-4 text-lg font-semibold">목표: 해외 시장 진출 및 기관 고객 확대</p>
+                                    
+                                    <ul class="space-y-2 text-emerald-100/80" style="line-height: 1.8;">
+                                        <li>• 글로벌 운용 플랫폼 구축</li>
+                                        <li>• 기관투자자용 솔루션 개발</li>
+                                        <li>• 경제 지표 연동 AI 분석 모델 적용</li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="w-full md:w-48">
+                                    <div class="text-center mb-4">
+                                        <div class="text-5xl font-bold bg-gradient-to-r from-emerald-400 to-emerald-600 bg-clip-text text-transparent">15%</div>
+                                        <div class="text-emerald-200/70 text-sm mt-2">진행률</div>
+                                    </div>
+                                    <div class="w-full bg-emerald-950/50 rounded-full h-3 overflow-hidden">
+                                        <div class="bg-gradient-to-r from-emerald-500 to-emerald-700 h-full rounded-full" style="width: 15%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- STEP 3 -->
+                    <div class="relative overflow-hidden rounded-2xl">
+                        <div class="absolute inset-0 bg-gradient-to-t from-amber-600/30 via-amber-500/5 to-transparent"></div>
+                        <div class="absolute -bottom-20 left-1/2 -translate-x-1/2 w-96 h-96 bg-amber-500/50 rounded-full blur-[80px]"></div>
+                        
+                        <div class="relative z-10 bg-black/30 backdrop-blur-2xl border border-amber-900/20 rounded-2xl shadow-2xl p-10">
+                            <div class="flex flex-col md:flex-row gap-8">
+                                <div class="flex-1">
+                                    <div class="relative inline-flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-md mb-4 overflow-hidden">
+                                        <span class="absolute inset-0 rounded-full bg-gradient-to-r from-amber-600/30 via-amber-500/20 to-amber-600/30"></span>
+                                        <span class="absolute inset-0 rounded-full" style="border: 1px solid transparent; background: linear-gradient(to right, #d97706, #f59e0b, #d97706) border-box; -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0); mask-composite: exclude;"></span>
+                                        <span class="relative text-sm font-semibold text-amber-100">STEP 3 — 2027</span>
+                                    </div>
+                                    
+                                    <h3 class="text-3xl font-bold mb-4" style="line-height: 1.6;">
+                                        <span class="bg-gradient-to-r from-amber-200 to-amber-500 bg-clip-text text-transparent">
+                                            생태계 구축
+                                        </span>
+                                    </h3>
+                                    
+                                    <p class="text-amber-200/70 mb-4 text-lg font-semibold">목표: 브랜드 리더십 확보 및 트레이딩 생태계 완성</p>
+                                    
+                                    <ul class="space-y-2 text-amber-100/80" style="line-height: 1.8;">
+                                        <li>• 글로벌 파트너 네트워크 확장</li>
+                                        <li>• 토큰 기반 보상 시스템 및 투자자 커뮤니티 구축</li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="w-full md:w-48">
+                                    <div class="text-center mb-4">
+                                        <div class="text-5xl font-bold bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent">0%</div>
+                                        <div class="text-amber-200/70 text-sm mt-2">진행률</div>
+                                    </div>
+                                    <div class="w-full bg-amber-950/50 rounded-full h-3 overflow-hidden">
+                                        <div class="bg-gradient-to-r from-amber-500 to-amber-700 h-full rounded-full" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 마무리 섹션: 통계 + CTA -->
+    <section id="performance" class="py-10 sm:py-16 md:py-20 lg:py-24 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-t from-blue-600/40 via-blue-500/10 to-transparent"></div>
+        <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-[300px] h-[300px] sm:w-[500px] sm:h-[500px] md:w-[600px] md:h-[600px] lg:w-[800px] lg:h-[800px] bg-blue-500/60 rounded-full blur-[100px] sm:blur-[120px] md:blur-[150px]"></div>
+        
+        <div class="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12 relative z-10">
+            <div class="max-w-7xl mx-auto">
+                <div class="text-center mb-8 sm:mb-12 md:mb-16">
+                    <h2 class="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-normal mb-4 sm:mb-6 px-4 leading-tight" style="line-height: 1.5; background-image: linear-gradient(to bottom, white 0%, white 60%, #9ca3af 85%, #4b5563 100%) !important; -webkit-background-clip: text !important; background-clip: text !important; -webkit-text-fill-color: transparent !important; color: transparent !important;">
+                        수치로 증명된 신뢰와 성과
+                    </h2>
+                </div>
+                
+                <!-- 통계 그리드 -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 md:gap-6 lg:gap-8 mb-10 sm:mb-12 md:mb-16">
+                    <!-- 통계 1 -->
+                    <div class="relative overflow-hidden rounded-xl sm:rounded-2xl h-full">
+                        <div class="absolute inset-0 bg-gradient-to-t from-blue-600/30 via-blue-500/5 to-transparent"></div>
+                        <div class="absolute -bottom-20 left-1/2 -translate-x-1/2 w-48 h-48 bg-blue-500/40 rounded-full blur-[80px]"></div>
+                        
+                        <div class="relative z-10 bg-black/40 backdrop-blur-2xl border border-blue-900/30 rounded-xl sm:rounded-2xl shadow-2xl p-6 sm:p-7 md:p-8 lg:p-10 text-center h-full min-h-[160px] sm:min-h-[200px] md:min-h-[240px] flex flex-col items-center justify-center">
+                            <div class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-2 sm:mb-3 md:mb-4 bg-gradient-to-r from-blue-300 to-blue-600 bg-clip-text text-transparent">12M+</div>
+                            <p class="text-blue-100/80 text-sm sm:text-base md:text-lg lg:text-xl leading-tight">누적 운용 자산(AUM)</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 통계 2 -->
+                    <div class="relative overflow-hidden rounded-xl sm:rounded-2xl h-full">
+                        <div class="absolute inset-0 bg-gradient-to-t from-blue-600/30 via-blue-500/5 to-transparent"></div>
+                        <div class="absolute -bottom-20 left-1/2 -translate-x-1/2 w-48 h-48 bg-blue-500/40 rounded-full blur-[80px]"></div>
+                        
+                        <div class="relative z-10 bg-black/40 backdrop-blur-2xl border border-blue-900/30 rounded-xl sm:rounded-2xl shadow-2xl p-6 sm:p-7 md:p-8 lg:p-10 text-center h-full min-h-[160px] sm:min-h-[200px] md:min-h-[240px] flex flex-col items-center justify-center">
+                            <div class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-2 sm:mb-3 md:mb-4 bg-gradient-to-r from-blue-300 to-blue-600 bg-clip-text text-transparent">19.2%</div>
+                            <p class="text-blue-100/80 text-sm sm:text-base md:text-lg lg:text-xl leading-tight">36개월 기준<br>월 평균 수익률</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 통계 3 -->
+                    <div class="relative overflow-hidden rounded-xl sm:rounded-2xl h-full">
+                        <div class="absolute inset-0 bg-gradient-to-t from-blue-600/30 via-blue-500/5 to-transparent"></div>
+                        <div class="absolute -bottom-20 left-1/2 -translate-x-1/2 w-48 h-48 bg-blue-500/40 rounded-full blur-[80px]"></div>
+                        
+                        <div class="relative z-10 bg-black/40 backdrop-blur-2xl border border-blue-900/30 rounded-xl sm:rounded-2xl shadow-2xl p-6 sm:p-7 md:p-8 lg:p-10 text-center h-full min-h-[160px] sm:min-h-[200px] md:min-h-[240px] flex flex-col items-center justify-center">
+                            <div class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-2 sm:mb-3 md:mb-4 bg-gradient-to-r from-blue-300 to-blue-600 bg-clip-text text-transparent">3.2M+</div>
+                            <p class="text-blue-100/80 text-sm sm:text-base md:text-lg lg:text-xl leading-tight">누적 거래 횟수</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 최종 CTA -->
+                <div class="text-center px-4">
+                    <h3 class="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-normal mb-3 sm:mb-4 md:mb-6 leading-tight" style="line-height: 1.5; background-image: linear-gradient(to bottom, white 0%, white 60%, #9ca3af 85%, #4b5563 100%) !important; -webkit-background-clip: text !important; background-clip: text !important; -webkit-text-fill-color: transparent !important; color: transparent !important;">
+                        AI가 일하는 동안,<br>
+                        당신의 자산은 성장합니다.
+                    </h3>
+                    <p class="text-sm sm:text-base md:text-lg lg:text-xl text-blue-100/70 mb-6 sm:mb-8 md:mb-10 leading-relaxed">
+                        오늘부터 자동으로 수익을 만들어보세요.
+                    </p>
+                    
+                    <div class="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 justify-center max-w-2xl mx-auto">
+                        <button class="neon-style-1-2 w-full sm:flex-1 px-5 py-3.5 sm:px-8 sm:py-4 md:px-10 md:py-5 text-sm sm:text-base md:text-lg text-white transition-all duration-300 hover:scale-105 active:scale-95 touch-manipulation">
+                            <span class="relative z-10 font-medium">지금 시작하기</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // 모바일 메뉴 토글
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            mobileMenu.classList.toggle('hidden');
+        }
+        
+        // 아코디언 토글
+        function toggleAccordion(element) {
+            const content = element.querySelector('.accordion-content');
+            const icon = element.querySelector('.accordion-icon');
+            
+            // Close all other accordions
+            document.querySelectorAll('.accordion-item').forEach(item => {
+                if (item !== element) {
+                    item.querySelector('.accordion-content').classList.remove('active');
+                    item.querySelector('.accordion-icon').style.transform = 'rotate(0deg)';
+                }
+            });
+            
+            // Toggle current accordion
+            content.classList.toggle('active');
+            if (content.classList.contains('active')) {
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+        
+        // 스크롤 시 네비게이션 바 배경 변경
+        window.addEventListener('scroll', function() {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 50) {
+                nav.classList.add('shadow-lg');
+            } else {
+                nav.classList.remove('shadow-lg');
+            }
+        });
+    </script>
+</body>
+</html>
+
